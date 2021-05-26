@@ -5,7 +5,7 @@ import { fireEvent, screen } from "@testing-library/dom"
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
-    test("Then I should upload validate file", () => {
+    test("Then I should upload validated file", () => {
       const html = NewBillUI()
       document.body.innerHTML = html 
       
@@ -26,5 +26,6 @@ describe("Given I am connected as an employee", () => {
       fireEvent.submit(form) 
       expect(validExtensions).toContain(inputFileExtension)
     })
+
   })
 })

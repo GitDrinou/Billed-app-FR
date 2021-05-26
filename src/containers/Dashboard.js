@@ -85,7 +85,7 @@ export default class {
     if (typeof $('#modaleFileAdmin1').modal === 'function') $('#modaleFileAdmin1').modal('show')
   }
 
-  handleEditTicket(bill, bills) {
+  handleEditTicket(e, bill, bills) {
  
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id
@@ -149,7 +149,7 @@ export default class {
 
     bills.forEach(bill => {
       if(bill.status === getStatus(this.index)) {
-        $(`#open-bill${bill.id}`).on('click',(e) => this.handleEditTicket(bill, bills))
+        $(`#open-bill${bill.id}`).on('click',(e) => this.handleEditTicket(e, bill, bills))
       }  
     })
 

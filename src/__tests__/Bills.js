@@ -1,7 +1,10 @@
-import { screen } from "@testing-library/dom"
+import { fireEvent, screen } from "@testing-library/dom"
+import userEvent from '@testing-library/user-event'
 import BillsUI from "../views/BillsUI.js"
+import Bill, { handleClickNewBill, handleClickIconEye } from "../containers/Bills.js"
+import { ROUTES, ROUTES_PATH } from '../constants/routes.js'
 import { bills } from "../fixtures/bills.js"
-import { ROUTES_PATH } from '../constants/routes.js'
+import { localStorageMock } from "../__mocks__/localStorage.js"
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
@@ -17,6 +20,39 @@ describe("Given I am connected as an employee", () => {
       const antiChrono = (a, b) => ((b - a) ? -1 : 1)
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
+    })
+
+    describe('When I click on the icon eye', () => {
+      test('A modal should open', () => {
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }))
+        const html = BillsUI({ data: bills })
+        //console.log(html)
+        document.body.innerHTML = html
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
+
+        const firestore = null
+        const bill = new Bill({
+          document, onNavigate, firestore, localStorage: window.localStorage
+        })
+        
+        const handleClickIconEye = jest.fn(bill.handleClickIconEye)
+        const eyes = screen.getAllByTestId('icon-eye')
+        eyes.forEach(eye => {
+          eye.addEventListener('click', () => {            
+            bill.handleClickIconEye
+          })
+          userEvent.click(eye)
+          expect(bill.handleClickIconEye).toHaveBeenCalled()
+        })
+        
+        const modale = screen.getByTestId('modaleFile')
+        expect(modale).toBeTruthy()
+      })
     })
   })
 })
