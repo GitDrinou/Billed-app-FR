@@ -1,8 +1,9 @@
 import { fireEvent, screen } from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
 import BillsUI from "../views/BillsUI.js"
-import Bill, { handleClickNewBill, handleClickIconEye } from "../containers/Bills.js"
+import Bill from "../containers/Bills.js"
 import { ROUTES, ROUTES_PATH } from '../constants/routes.js'
+import firebase from "../__mocks__/firebase"
 import { bills } from "../fixtures/bills.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 
@@ -22,14 +23,37 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted)
     })
 
+    describe('When I click on the New Bill button', () => {
+      test('It should display the New Bill Page', () => {
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }))
+        const html = BillsUI({ data:[]})
+        document.body.innerHTML = html
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
+        const firestore = null
+        const bill = new Bill({
+          document, onNavigate, firestore, localStorage: window.localStorage
+        })
+
+        const handleClickNewBill = jest.fn(bill.handleClickNewBill)
+        const buttonNewBill = screen.getByTestId('btn-new-bill')
+        buttonNewBill.addEventListener('click', handleClickNewBill)
+        userEvent.click(buttonNewBill)
+        expect(handleClickNewBill).toHaveBeenCalled() 
+      })         
+    })
+
     describe('When I click on the icon eye', () => {
-      test('A modal should open', () => {
+      test('It should open a modal', () => {
         Object.defineProperty(window, 'localStorage', { value: localStorageMock })
         window.localStorage.setItem('user', JSON.stringify({
           type: 'Employee'
         }))
         const html = BillsUI({ data: bills })
-        //console.log(html)
         document.body.innerHTML = html
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname })
@@ -41,17 +65,13 @@ describe("Given I am connected as an employee", () => {
         })
         
         const handleClickIconEye = jest.fn(bill.handleClickIconEye)
-        const eyes = screen.getAllByTestId('icon-eye')
-        eyes.forEach(eye => {
-          eye.addEventListener('click', () => {            
-            bill.handleClickIconEye
-          })
-          userEvent.click(eye)
-          expect(bill.handleClickIconEye).toHaveBeenCalled()
-        })
-        
-        const modale = screen.getByTestId('modaleFile')
-        expect(modale).toBeTruthy()
+        const eye = screen.getAllByTestId('icon-eye')[0]
+        eye.addEventListener('click', handleClickIconEye)
+        userEvent.click(eye)
+        expect(handleClickIconEye).toHaveBeenCalled() 
+
+        const modale = screen.getByTestId('modaleFile')        
+        expect(modale).toBeTruthy()   
       })
     })
   })
