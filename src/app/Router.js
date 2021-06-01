@@ -6,6 +6,7 @@ import Dashboard from "../containers/Dashboard.js"
 
 import BillsUI from "../views/BillsUI.js"
 import DashboardUI from "../views/DashboardUI.js"
+import NewBillUI from "../views/NewBillUI.js"
 
 import { ROUTES, ROUTES_PATH } from "../constants/routes.js"
 

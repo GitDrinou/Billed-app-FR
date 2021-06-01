@@ -1,19 +1,39 @@
 import { fireEvent, screen } from "@testing-library/dom"
+import '@testing-library/jest-dom/extend-expect'
 import userEvent from '@testing-library/user-event'
 import BillsUI from "../views/BillsUI.js"
-import Bill from "../containers/Bills.js"
+import Bills from "../containers/Bills.js"
 import { ROUTES, ROUTES_PATH } from '../constants/routes.js'
-import firebase from "../__mocks__/firebase"
+import Router from "../app/Router.js"
 import { bills } from "../fixtures/bills.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
+import firebase from "../__mocks__/firebase"
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
-    test("Then bill icon in vertical layout should be highlighted", () => {
-      const html = BillsUI({ data: []})
-      document.body.innerHTML = html
-      //to-do write expect expression
+    test("Then bill icon in vertical layout should be highlighted", () => {   
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+      const pathname = ROUTES_PATH['Bills']   
+      const html = ROUTES({ 
+        pathname,
+        data: [],
+        loading:true,
+        error:null
+       })
+       document.body.innerHTML = html
+       console.log(Router)
+     
+      //console.log(jest.fn(bill.onNavigate(ROUTES_PATH['Bills'])))
+      //const icoWin = screen.getByTestId('icon-window')
+      //icoWin.classList.add(activeMock)
+      //console.log(html)      
+      //expect().toHaveClass('active-icon')
+
     })
+
     test("Then bills should be ordered from earliest to latest", () => {
       const html = BillsUI({ data: bills })
       document.body.innerHTML = html
@@ -24,7 +44,7 @@ describe("Given I am connected as an employee", () => {
     })
 
     describe('When I click on the New Bill button', () => {
-      test('It should display the New Bill Page', () => {
+      test('Then it should display the New Bill Page', () => {
         Object.defineProperty(window, 'localStorage', { value: localStorageMock })
         window.localStorage.setItem('user', JSON.stringify({
           type: 'Employee'
@@ -35,7 +55,7 @@ describe("Given I am connected as an employee", () => {
           document.body.innerHTML = ROUTES({ pathname })
         }
         const firestore = null
-        const bill = new Bill({
+        const bill = new Bills({
           document, onNavigate, firestore, localStorage: window.localStorage
         })
 
@@ -48,7 +68,7 @@ describe("Given I am connected as an employee", () => {
     })
 
     describe('When I click on the icon eye', () => {
-      test('It should open a modal', () => {
+      test('Then it should open a modal', () => {
         Object.defineProperty(window, 'localStorage', { value: localStorageMock })
         window.localStorage.setItem('user', JSON.stringify({
           type: 'Employee'
@@ -60,13 +80,13 @@ describe("Given I am connected as an employee", () => {
         }
 
         const firestore = null
-        const bill = new Bill({
+        const bill = new Bills({
           document, onNavigate, firestore, localStorage: window.localStorage
         })
         
         const handleClickIconEye = jest.fn(bill.handleClickIconEye)
         const eye = screen.getAllByTestId('icon-eye')[0]
-        eye.addEventListener('click', handleClickIconEye)
+        eye.addEventListener('click', handleClickIconEye(eye))
         userEvent.click(eye)
         expect(handleClickIconEye).toHaveBeenCalled() 
 
@@ -74,5 +94,48 @@ describe("Given I am connected as an employee", () => {
         expect(modale).toBeTruthy()   
       })
     })
+  })
+
+  // test d'intégration GET
+  describe("When I navigate to Bills Page", () => {
+    test("fetches bills from mock API GET", async () => {
+      const getSpy = jest.spyOn(firebase, "get")       
+      const userBills = await firebase.get()
+      expect(getSpy).toHaveBeenCalledTimes(1)
+      expect(userBills.data.length).toBe(4)
+    })
+    test("fetches bills from an API and fails with 404 message error", async () => {
+      firebase.get.mockImplementationOnce(() =>
+        Promise.reject(new Error("Erreur 404"))
+      )
+      const html = BillsUI({ error: "Erreur 404" })
+      document.body.innerHTML = html
+      const message = await screen.getByText(/Erreur 404/)
+      expect(message).toBeTruthy()
+    })
+    test("fetches messages from an API and fails with 500 message error", async () => {
+      firebase.get.mockImplementationOnce(() =>
+        Promise.reject(new Error("Erreur 500"))
+      )
+      const html = BillsUI({ error: "Erreur 500" })
+      document.body.innerHTML = html
+      const message = await screen.getByText(/Erreur 500/)
+      expect(message).toBeTruthy()
+    })
+  })
+})
+
+describe('When I am on Bills page but it is loading', () => {
+  test('Then, Loading page should be rendered', () => {
+    const html = BillsUI({ loading: true })
+    document.body.innerHTML = html
+    expect(screen.getAllByText('Loading...')).toBeTruthy()
+  })
+})
+describe('When I am on Bills page but back-end send an error message', () => {
+  test('Then, Error page should be rendered', () => {
+    const html = BillsUI({ error: 'some error message' })
+    document.body.innerHTML = html
+    expect(screen.getAllByText('Erreur')).toBeTruthy()
   })
 })
