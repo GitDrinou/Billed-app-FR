@@ -1,10 +1,11 @@
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import { fireEvent, screen } from "@testing-library/dom"
+import userEvent from '@testing-library/user-event'
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import '@testing-library/jest-dom/extend-expect'
 import { ROUTES, ROUTES_PATH } from '../constants/routes.js'
-import Firestore from '../app/Firestore.js'
+import firestore from "../app/Firestore.js"
 import firebase from "../__mocks__/firebase"
 
 
@@ -29,8 +30,7 @@ describe("Given I am connected as an employee", () => {
 
       const validExtensions = ['jpg', 'jpeg', 'png']
       const fileExtension = inputFile.files[1].split('.')
-      const firestore = null
-      
+
       const newBill = new NewBill({
         document, onNavigate, firestore, localStorage: window.localStorage
       })
@@ -38,9 +38,13 @@ describe("Given I am connected as an employee", () => {
       expect(validExtensions).toContain(fileExtension[1])
       const form = screen.getByTestId("form-new-bill")
       const handleChangeFile = jest.fn(newBill.handleChangeFile)
-      form.addEventListener('submit', handleChangeFile(inputFile))
-      fireEvent.submit(form)
+      inputFile.addEventListener('change', handleChangeFile)
+      fireEvent.change(inputFile)
       expect(handleChangeFile).toHaveBeenCalled()
+      
+
+      // UTILISATION DES OBJETS {} FIRESTORE...
+      
     })
   })
 

@@ -4,33 +4,31 @@ import userEvent from '@testing-library/user-event'
 import BillsUI from "../views/BillsUI.js"
 import Bills from "../containers/Bills.js"
 import { ROUTES, ROUTES_PATH } from '../constants/routes.js'
-import Router from "../app/Router.js"
 import { bills } from "../fixtures/bills.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import firebase from "../__mocks__/firebase"
+import {activeIcon} from '../app/Router.js'
 
 describe("Given I am connected as an employee", () => {
-  describe("When I am on Bills Page", () => {
+  describe("When I am on Bills Page", () => {  
     test("Then bill icon in vertical layout should be highlighted", () => {   
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
-      }))
-      const pathname = ROUTES_PATH['Bills']   
-      const html = ROUTES({ 
-        pathname,
-        data: [],
-        loading:true,
-        error:null
-       })
-       document.body.innerHTML = html
-       console.log(Router)
-     
-      //console.log(jest.fn(bill.onNavigate(ROUTES_PATH['Bills'])))
-      //const icoWin = screen.getByTestId('icon-window')
-      //icoWin.classList.add(activeMock)
-      //console.log(html)      
-      //expect().toHaveClass('active-icon')
+      })) 
+      const html = BillsUI({data:[]})
+      document.body.innerHTML = html   
+      
+      const icoWin = screen.getByTestId('icon-window')
+      expect(icoWin).toBeTruthy()
+
+      const addClass = jest.fn()
+      const remClass = jest.fn()
+      const activedIcon = {classList:{add:addClass, remove:remClass}}
+      activeIcon(activedIcon, activedIcon)      
+
+      expect(addClass.mock.calls.length).toBe(1);
+      expect(addClass.mock.calls[0][0]).toBe('active-icon');
 
     })
 
@@ -61,6 +59,7 @@ describe("Given I am connected as an employee", () => {
 
         const handleClickNewBill = jest.fn(bill.handleClickNewBill)
         const buttonNewBill = screen.getByTestId('btn-new-bill')
+        expect(buttonNewBill).toBeTruthy()
         buttonNewBill.addEventListener('click', handleClickNewBill)
         userEvent.click(buttonNewBill)
         expect(handleClickNewBill).toHaveBeenCalled() 
@@ -86,12 +85,15 @@ describe("Given I am connected as an employee", () => {
         
         const handleClickIconEye = jest.fn(bill.handleClickIconEye)
         const eye = screen.getAllByTestId('icon-eye')[0]
+        expect(eye).toBeTruthy()
         eye.addEventListener('click', handleClickIconEye(eye))
         userEvent.click(eye)
         expect(handleClickIconEye).toHaveBeenCalled() 
 
-        const modale = screen.getByTestId('modaleFile')        
-        expect(modale).toBeTruthy()   
+        const modale = screen.getByTestId('modaleFile')  
+        
+        // affiche le modale TO DO
+         
       })
     })
   })
@@ -138,4 +140,5 @@ describe('When I am on Bills page but back-end send an error message', () => {
     document.body.innerHTML = html
     expect(screen.getAllByText('Erreur')).toBeTruthy()
   })
+  
 })
