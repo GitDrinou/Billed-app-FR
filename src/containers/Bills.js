@@ -1,9 +1,6 @@
 import { ROUTES_PATH } from '../constants/routes.js'
 import { formatDate, formatStatus } from "../app/format.js"
-import USERS_TEST from '../constants/usersTest.js'
 import Logout from "./Logout.js"
-
-//import BigBilledIcon from '../assets/svg/big_billed.js'
 
 export default class {
   constructor({ document, onNavigate, firestore, localStorage }) {
@@ -12,6 +9,7 @@ export default class {
     this.firestore = firestore
     const buttonNewBill = document.querySelector(`button[data-testid="btn-new-bill"]`)
     if (buttonNewBill) buttonNewBill.addEventListener('click', this.handleClickNewBill)
+    const modale = document.querySelector(`div[data-testid="modaleFile"]`)
     const iconEye = document.querySelectorAll(`div[data-testid="icon-eye"]`)
     if (iconEye) iconEye.forEach(icon => {
       icon.addEventListener('click', (e) => this.handleClickIconEye(icon))
@@ -27,7 +25,7 @@ export default class {
     const billUrl = icon.getAttribute("data-bill-url")
     const imgWidth = Math.floor($('#modaleFile').width() * 0.5)
     $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;'><img width=${imgWidth} src=${billUrl} /></div>`)
-    if (typeof $('#modaleFile').modal === 'function') $('#modaleFile').modal('show')
+    $('#modaleFile').modal('show')
   }
 
   // not need to cover this function by tests

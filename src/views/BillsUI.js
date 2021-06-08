@@ -4,6 +4,23 @@ import LoadingPage from "./LoadingPage.js"
 
 import Actions from './Actions.js'
 
+export const modal = () => (`
+    <div class="modal fade" id="modaleFile" data-testid="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Justificatif</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body"  data-toggle="modal">
+          </div>
+        </div>
+      </div>
+    </div>
+  `)
+
 const row = (bill) => {
   return (`
     <tr>
@@ -20,27 +37,14 @@ const row = (bill) => {
   }
 
 const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+  // convert strings to dates : new Date(b.date) - new Date(a.date)
+  const dataSorted = (data && data.length) ? data.sort((a, b) => new Date(b.date) - new Date(a.date)) : ""
+  return (data && data.length) ? dataSorted.map(bill => row(bill)).join("") : ""
 }
 
+
+
 export default ({ data: bills, loading, error }) => {  
-  
-  const modal = () => (`
-    <div class="modal fade" id="modaleFile" data-testid="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Justificatif</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-          </div>
-        </div>
-      </div>
-    </div>
-  `)
 
   if (loading) {
     return LoadingPage()
