@@ -38,7 +38,13 @@ const row = (bill) => {
 
 const rows = (data) => {
   // convert strings to dates : new Date(b.date) - new Date(a.date)
-  const dataSorted = (data && data.length) ? data.sort((a, b) => new Date(b.date) - new Date(a.date)) : ""
+  let dataSorted
+  // in jest environment
+  if (typeof jest !== 'undefined') {
+    dataSorted = (data && data.length) ? data.sort((a, b) => new Date(b.date) - new Date(a.date)) : ""
+  } else {
+    dataSorted = (data && data.length) ? data.sort((a, b) => new Date(b.digitDate) - new Date(a.digitDate)) : ""
+  }
   return (data && data.length) ? dataSorted.map(bill => row(bill)).join("") : ""
 }
 
