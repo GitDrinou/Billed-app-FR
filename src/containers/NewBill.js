@@ -42,9 +42,15 @@ export default class NewBill {
   };
 
   handleSubmit = e => {
-    e.preventDefault()
+    e.preventDefault()   
     //console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
-    if (this.fileName === "invalid") return
+    if (this.fileName === "invalid")  {
+      const msgError = this.document.createElement("span")
+      msgError.classList.add("frmError")
+      msgError.innerHTML = `Le fichier n'est pas valide. Extensions autorisées : .jpg,.jpeg,.png`
+      this.document.querySelector(`.js-proof`).appendChild(msgError)      
+      return
+    }
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,

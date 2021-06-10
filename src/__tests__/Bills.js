@@ -24,7 +24,6 @@ describe("Given I am connected as an employee", () => {
       const iconActived = icoWin.classList.contains('active-icon')
       expect(iconActived).toBeTruthy()
     })
-
     test("Then bills should be ordered from earliest to latest", () => {
       const html = BillsUI({ data: bills })
       document.body.innerHTML = html
@@ -33,17 +32,39 @@ describe("Given I am connected as an employee", () => {
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
     })
-
     test("Then NewBill button should be display", () => {
       const html = BillsUI({data:bills})
       document.body.innerHTML = html
       const buttonNewBill = screen.getByTestId('btn-new-bill')
       expect(buttonNewBill).toBeTruthy()
     })
-  })  
+  }) 
+  describe("When there are bills on the Bills page", () => {
+    test("It should display an icon eye", () => {
+      const html = BillsUI({data:bills})
+      document.body.innerHTML = html
+      const iconEye = screen.getAllByTestId('icon-eye')
+      expect(iconEye).toBeTruthy()
+    })
+  })
+  describe('When I am on Bills page but it is loading', () => {
+    test('Then, Loading page should be rendered', () => {
+      const html = BillsUI({ loading: true })
+      document.body.innerHTML = html
+      expect(screen.getAllByText('Loading...')).toBeTruthy()
+    })
+  })
+
+  describe('When I am on Bills page but back-end send an error message', () => {
+    test('Then, Error page should be rendered', () => {
+      const html = BillsUI({ error: 'some error message' })
+      document.body.innerHTML = html
+      expect(screen.getAllByText('Erreur')).toBeTruthy()
+    })  
+  })
 
   describe('When I am on Bills Page and I click on the New Bill button', () => {
-    test('Then it should render the New Bill Page', () => {
+    test('Then it should display the New Bill Page', () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
@@ -117,21 +138,5 @@ describe("Given I am connected as an employee", () => {
       const message = await screen.getByText(/Erreur 500/)
       expect(message).toBeTruthy()
     })
-  })
-
-
-  describe('When I am on Bills page but it is loading', () => {
-    test('Then, Loading page should be rendered', () => {
-      const html = BillsUI({ loading: true })
-      document.body.innerHTML = html
-      expect(screen.getAllByText('Loading...')).toBeTruthy()
-    })
-  })
-  describe('When I am on Bills page but back-end send an error message', () => {
-    test('Then, Error page should be rendered', () => {
-      const html = BillsUI({ error: 'some error message' })
-      document.body.innerHTML = html
-      expect(screen.getAllByText('Erreur')).toBeTruthy()
-    })  
-  })
+  })  
 })

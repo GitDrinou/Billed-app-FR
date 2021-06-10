@@ -1,3 +1,5 @@
+import firebase from "./firebase"
+
 export default {
   get: () => {
     return Promise.resolve({
@@ -63,9 +65,13 @@ export default {
       }]
     })
   },
-  post: (newBill) => {
+  post: async (bill) => {
+    const getDatas = await firebase.get()    
     return Promise.resolve({
-      data: [newBill]
+      data: [
+        ...getDatas.data,
+        bill
+      ]
     })
   }
 }

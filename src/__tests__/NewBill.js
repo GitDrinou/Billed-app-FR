@@ -1,5 +1,6 @@
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
+import BillsUI from '../views/BillsUI'
 import { fireEvent, screen } from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
 import { localStorageMock } from "../__mocks__/localStorage.js"
@@ -109,25 +110,25 @@ describe("Given I am a user connected as an Employee", () => {
        }
        const bills = await firebase.post(newBill)
        expect(postSpy).toHaveBeenCalledTimes(1)
-       expect(bills.data).toMatchObject([newBill])
+       expect(bills.data.length).toBe(5)
     })
-    /*test("fetches bills from an API and fails with 404 message error", async () => {
-      firebase.get.mockImplementationOnce(() =>
+    test("it should add bill from an API but fails with 404 message error", async () => {
+      firebase.post.mockImplementationOnce(() =>
         Promise.reject(new Error("Erreur 404"))
       )
-      const html = DashboardUI({ error: "Erreur 404" })
+      const html = BillsUI({ error: "Erreur 404" })
       document.body.innerHTML = html
       const message = await screen.getByText(/Erreur 404/)
       expect(message).toBeTruthy()
     })
-    test("fetches messages from an API and fails with 500 message error", async () => {
-      firebase.get.mockImplementationOnce(() =>
+    test("It should add bill from an API and fails with 500 message error", async () => {
+      firebase.post.mockImplementationOnce(() =>
         Promise.reject(new Error("Erreur 500"))
       )
-      const html = DashboardUI({ error: "Erreur 500" })
+      const html = BillsUI({ error: "Erreur 500" })
       document.body.innerHTML = html
       const message = await screen.getByText(/Erreur 500/)
       expect(message).toBeTruthy()
-    })*/
+    })
   })
 })
