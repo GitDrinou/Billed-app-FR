@@ -17,13 +17,14 @@ describe("Given I am connected as an employee", () => {
         type: 'Employee'
       })) 
       const pathname = ROUTES_PATH['Bills']
-      Object.defineProperty(window, "location", { value: { hash: pathname } });
+      Object.defineProperty(window, "location", { value: { hash: pathname } });      
       document.body.innerHTML = `<div id="root"></div>`
       Router()
       const icoWin = screen.getByTestId('icon-window')
       const iconActived = icoWin.classList.contains('active-icon')
       expect(iconActived).toBeTruthy()
     })
+
     test("Then bills should be ordered from earliest to latest", () => {
       const html = BillsUI({ data: bills })
       document.body.innerHTML = html
@@ -31,12 +32,6 @@ describe("Given I am connected as an employee", () => {
       const antiChrono = (a, b) => (a < b ? 1 : -1)
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
-    })
-    test("Then NewBill button should be display", () => {
-      const html = BillsUI({data:bills})
-      document.body.innerHTML = html
-      const buttonNewBill = screen.getByTestId('btn-new-bill')
-      expect(buttonNewBill).toBeTruthy()
     })
   }) 
   describe("When there are bills on the Bills page", () => {

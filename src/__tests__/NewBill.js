@@ -1,10 +1,9 @@
+import { fireEvent, screen } from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import BillsUI from '../views/BillsUI'
-import { fireEvent, screen } from "@testing-library/dom"
 import userEvent from '@testing-library/user-event'
 import { localStorageMock } from "../__mocks__/localStorage.js"
-import '@testing-library/jest-dom/extend-expect'
 import { ROUTES, ROUTES_PATH } from '../constants/routes.js'
 import firebase from "../__mocks__/firebase"
 import firestore from "../app/Firestore.js"
@@ -27,15 +26,13 @@ describe("Given I am connected as an employee an I am on a NewBill page", () => 
       const handleChangeFile = jest.fn(newBill.handleChangeFile)
       const inputFile = screen.getByTestId("file")
       inputFile.addEventListener('change', handleChangeFile)
-     
-      fireEvent.change(inputFile, { 
-        target: { 
-          files: [new File(["myProof"], "myProof.png", {
-            type: "image/png"
-          })]   
+      fireEvent.change(inputFile, {
+        target: {
+          files: [new File(["myProof.png"], "myProof.png", { type: "image/png" })]
         }
-      }) 
-      expect(handleChangeFile).toHaveBeenCalled();
+      })
+      
+      expect(handleChangeFile).toHaveBeenCalled();      
       expect(inputFile.files[0].name).toBe("myProof.png");
     })    
   })
@@ -88,7 +85,6 @@ describe("Given I am connected as an employee an I am on a NewBill page", () => 
 })
 
 // test d'intégration POST
-
 describe("Given I am a user connected as an Employee", () => {
   describe("When I create a new bill", () => {
     test("it should add bill to mock API POST", async () => {
@@ -105,7 +101,7 @@ describe("Given I am a user connected as an Employee", () => {
         "date": "2021-05-20",
         "amount": 345,
         "commentAdmin": "ok",
-        "email": "jane.doe@mail.com",
+        "email": "jane.doe@mail.com",%
         "pct": 20
        }
        const bills = await firebase.post(newBill)
