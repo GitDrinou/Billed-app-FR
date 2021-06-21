@@ -101,7 +101,7 @@ describe("Given I am a user connected as an Employee", () => {
         "date": "2021-05-20",
         "amount": 345,
         "commentAdmin": "ok",
-        "email": "jane.doe@mail.com",%
+        "email": "jane.doe@mail.com",
         "pct": 20
        }
        const bills = await firebase.post(newBill)

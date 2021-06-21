@@ -37,7 +37,6 @@ export default () => {
       //activeIcon(divIcon1,divIcon2)
       divIcon1.classList.add('active-icon')
       divIcon2.classList.remove('active-icon')
-      console.log(rootDiv.innerHTML)
       const bills = new Bills({ document, onNavigate, firestore, localStorage  })
       bills.getBills().then(data => {
         rootDiv.innerHTML = BillsUI({ data })
